@@ -1,3 +1,4 @@
+import sys
 
 """
 
@@ -7,21 +8,27 @@ such as Amazon, Kroger, Target, etc.
 
 """
 class ListClass:
-    def __init__(self, items: list[str] = None, id: int = None) -> None:
+    def __init__(self, items: list[str] = None, account_id: int = None, list_id: int = 0) -> None:
         """
         Initializes a List class object that can use an existing list of items or create a new one.
 
         :param items: list[str] - Takes a list of items to initialize the ListClass object.
-        :param id: int - Takes an integer to set the id of the ListClass object for database identification.
+        :param list_id: int - Takes an integer to set the id of the ListClass object for database identification.
         """
         if items is not None:
             self.__items: list[str] = items.copy()
         else:
             self.__items: list[str] = []
-        if id:
-            self.__id: int = id
+        if account_id:
+            self.__account_id: int = account_id
         else:
-            self.__id: int = 0 # Default id
+            self.__account_id: int = -1 # Default id
+        if list_id:
+            self.__list_id: int = list_id
+        else:
+            self.__list_id: int = -1 # Default id
+
+
 
     def insert_item(self, item: str, index: int = None) -> bool:
         """
@@ -66,7 +73,7 @@ class ListClass:
         :return: bool - returns True if the item was replaced, False if the index was invalid.
         """
         if self.remove_item(index):
-            return self.insert_item(item)
+            return self.insert_item(item, index)
         return False
 
     def set_items(self, items: list[str]) -> None:
@@ -98,6 +105,40 @@ class ListClass:
         """
         return self.__items.copy()
 
+    def set_account_id(self, account_id: int) -> None:
+        """
+        Sets the id of the account that owns the ListClass object.
+
+        :param account_id: int - takes an integer to set the id of the account that owns the ListClass object for database identification.
+        :return: None
+        """
+        self.__account_id = account_id if account_id > 0 else self.__account_id
+
+    def get_account_id(self) -> int:
+        """
+        Returns the id of the account that owns the ListClass object.
+
+        :return: int - returns the id of the account that owns the ListClass object
+        """
+        return self.__account_id
+
+    def set_list_id(self, list_id: int) -> None:
+        """
+        Sets the id of the ListClass object.
+
+        :param list_id: int - takes an integer to set the id of the ListClass object for database identification.
+        :return: None
+        """
+        self.__list_id = list_id if list_id > 0 else self.__list_id
+
+    def get_list_id(self) -> int:
+        """
+        Returns the id of the ListClass object.
+
+        :return: int - returns the id of the ListClass object
+        """
+        return self.__list_id
+
     def get_size(self) -> int:
         """
         Returns the size of the list of items.
@@ -127,7 +168,7 @@ class ListClass:
         else:
             print("Your list is empty.")
 
-    def read_file(self, file_name: str) -> bool:
+    def __read_file(self, file_name: str) -> bool:
         """
         Reads a file and adds all of those values to the list of items.
         If the file does not exit will return False and print an error message.
@@ -149,7 +190,7 @@ class ListClass:
             print(f"File {file_name} not found. Starting with an empty list.")
             return False
 
-    def write_file(self, file_name: str) -> bool:
+    def __write_file(self, file_name: str) -> bool:
         """
         Writes the list of items from the list to a file. If the file already exists,
         it will request a new file name and return False. If the file is written successfully, it will return True.
@@ -165,4 +206,55 @@ class ListClass:
             return True
         except FileExistsError:
             print(f"File {file_name}.txt already exists. Please choose a different name.")
+            return False
+
+    def run_list(self) -> bool:
+        """
+        Runs the entire list program, allowing all functions to be used.
+
+        :return: bool - returns True if the program ran successfully, False if an error occurred.
+        """
+        try:
+            if len(sys.argv) > 1:
+                self.__read_file(sys.argv[1])
+
+            while True:
+                print()
+                print(f"1. Add an item")
+                print(f"2. Remove an item")
+                print(f"3. Replace an item")
+                print(f"4. View list")
+                print(f"5. Make a file")
+                print(f"6. Exit")
+                user_input: str = input(f"Choose an option: ")
+
+                if user_input.strip() == "1":
+                    print()
+                    item: str = input("Enter an item to add: ")
+                    self.insert_item(item)
+                elif user_input.strip() == "2":
+                    print()
+                    index: int = int(input("Enter number of item to remove: "))
+                    self.remove_item(index)
+                elif user_input.strip() == "3":
+                    print()
+                    index = int(input("Enter number of item to replace: "))
+                    item = input("Enter new item: ")
+                    self.replace_item(index, item)
+                elif user_input.strip() == "4":
+                    print()
+                    self.view_list()
+                elif user_input.strip() == "5":
+                    print()
+                    output_file_name: str = input("Enter file name (without extension): ")
+                    self.__write_file(output_file_name)
+                elif user_input.strip() == "6":
+                    print()
+                    print(f"Exiting program")
+                    break
+                else:
+                    print("Invalid option. Please try again.")
+            return True
+        except Exception as e:
+            print(f"An error occurred: {e}")
             return False
