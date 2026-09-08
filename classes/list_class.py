@@ -34,7 +34,7 @@ class ItemList:
 
         :return: str - returns a string representation of the ItemList object
         """
-        string_items = [f"{item}" for item in self.__items]
+        string_items = ", ".join(f"{item}" for item in self.__items)
 
         return f"List contains {string_items}"
 
@@ -256,7 +256,7 @@ class ItemList:
                 if user_input.strip() == "1":
                     print()
                     item: str = input("Enter an item to add: ")
-                    quantity_input = input("Enter quantity: ")
+                    quantity_input = input("Enter quantity: ").strip()
                     quantity: int = int(quantity_input) if quantity_input.isdigit() else 1
                     self.insert_item(item, quantity)
                 elif user_input.strip() == "2":
@@ -267,7 +267,7 @@ class ItemList:
                     print()
                     index = int(input("Enter number of item to replace: "))
                     item = input("Enter new item: ")
-                    quantity_input = input("Enter quantity: ")
+                    quantity_input = input("Enter quantity: ").strip()
                     quantity: int = int(quantity_input) if quantity_input.isdigit() else 1
                     self.replace_item(index, item, quantity)
                 elif user_input.strip() == "4":
