@@ -1,5 +1,5 @@
 import sys
-from item_class import Item
+from classes.item_class import Item
 
 """
 This class can hold values put into a list and can read and write to a file.
@@ -7,12 +7,12 @@ Initially acts as a normal list, but will be able to used to compare products on
 such as Amazon, Kroger, Target, etc.
 """
 
-class List:
+class ItemList:
     def __init__(self, items: list[Item] = None, account_id: int = -1, list_id: int = -1) -> None:
         """
-        Initializes a List object that can use an existing list of items or create a new one.
+        Initializes a ItemList object that can use an existing list of items or create a new one.
 
-        :param items: list[Item] - Takes a list of items to initialize the List object.
+        :param items: list[Item] - Takes a list of items to initialize the ItemList object.
         :param account_id: int - Takes an integer to set the id of the account that owns the List object for database identification.
         :param list_id: int - Takes an integer to set the id of the List object for database identification.
         """
@@ -22,17 +22,17 @@ class List:
 
     def __repr__(self) -> str:
         """
-        Returns a string representation of the List object.
+        Returns a string representation of the ItemList object.
 
-        :return: str - returns a string representation of the List object
+        :return: str - returns a string representation of the ItemList object
         """
         return f"List(items={self.__items}, account_id={self.__account_id}, list_id={self.__list_id})"
 
     def __str__(self) -> str:
         """
-        Returns a string representation of the List object.
+        Returns a string representation of the ItemList object.
 
-        :return: str - returns a string representation of the List object
+        :return: str - returns a string representation of the ItemList object
         """
         string_items = [f"{item}" for item in self.__items]
 
@@ -40,12 +40,12 @@ class List:
 
     def __eq__(self, other: object) -> bool:
         """
-        Checks if two List objects are equal.
+        Checks if two ItemList objects are equal.
 
-        :param other: List - the other List object to compare with
-        :return: bool - returns True if the two List objects are equal, False otherwise
+        :param other: ItemList - the other ItemList object to compare with
+        :return: bool - returns True if the two ItemList objects are equal, False otherwise
         """
-        if isinstance(other, List) and self.get_size() == other.get_size():
+        if isinstance(other, ItemList) and self.get_size() == other.get_size():
             for i in range(len(self.__items)):
                 if self.__items[i] != other.__items[i]:
                     return False
@@ -56,7 +56,7 @@ class List:
         """
         Changes the list of items to another list of items.
 
-        :param items: list[Item] - takes a list of strings to replace the current list of items.
+        :param items: list[Item] - takes a list of items to replace the current list of items.
         :return: None
         """
         self.__items = items.copy()
@@ -83,35 +83,35 @@ class List:
 
     def set_account_id(self, account_id: int) -> None:
         """
-        Sets the id of the account that owns the List object.
+        Sets the id of the account that owns the ItemList object.
 
-        :param account_id: int - takes an integer to set the id of the account that owns the List object for database identification.
+        :param account_id: int - takes an integer to set the id of the account that owns the ItemList object for database identification.
         :return: None
         """
         self.__account_id = account_id if account_id > 0 else self.__account_id
 
     def get_account_id(self) -> int:
         """
-        Returns the id of the account that owns the List object.
+        Returns the id of the account that owns the ItemList object.
 
-        :return: int - returns the id of the account that owns the List object
+        :return: int - returns the id of the account that owns the ItemList object
         """
         return self.__account_id
 
     def set_list_id(self, list_id: int) -> None:
         """
-        Sets the id of the List object.
+        Sets the id of the ItemList object.
 
-        :param list_id: int - takes an integer to set the id of the List object for database identification.
+        :param list_id: int - takes an integer to set the id of the ItemList object for database identification.
         :return: None
         """
         self.__list_id = list_id if list_id > 0 else self.__list_id
 
     def get_list_id(self) -> int:
         """
-        Returns the id of the List object.
+        Returns the id of the ItemList object.
 
-        :return: int - returns the id of the List object
+        :return: int - returns the id of the ItemList object
         """
         return self.__list_id
 
@@ -256,7 +256,8 @@ class List:
                 if user_input.strip() == "1":
                     print()
                     item: str = input("Enter an item to add: ")
-                    quantity: int = int(input("Enter quantity: "))
+                    quantity_input = input("Enter quantity: ")
+                    quantity: int = int(quantity_input) if quantity_input.isdigit() else 1
                     self.insert_item(item, quantity)
                 elif user_input.strip() == "2":
                     print()
@@ -266,7 +267,8 @@ class List:
                     print()
                     index = int(input("Enter number of item to replace: "))
                     item = input("Enter new item: ")
-                    quantity = int(input("Enter quantity: "))
+                    quantity_input = input("Enter quantity: ")
+                    quantity: int = int(quantity_input) if quantity_input.isdigit() else 1
                     self.replace_item(index, item, quantity)
                 elif user_input.strip() == "4":
                     print()
